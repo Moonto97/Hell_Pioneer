@@ -1,9 +1,7 @@
 using UnityEngine;
 
-/// <summary>
-/// 플레이어의 연사력을 증가시키는 장비형/패시브 아이템.
-/// 실제 증가 방식(발사 간격 감소, 배율 증가 등)은 IPlayerFireRate 구현체에 맡긴다.
-/// </summary>
+// 플레이어의 연사력을 증가시키는 장비형/패시브 아이템
+// 실제 증가 방식(발사 간격 감소, 배율 증가 등)은 IPlayerFireRate 구현체에 맡긴다
 public class FireRateUpItem : ItemPickup
 {
     [Header("Fire Rate Up Settings")]

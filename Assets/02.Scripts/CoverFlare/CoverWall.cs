@@ -1,10 +1,8 @@
 using UnityEngine;
 
-/// <summary>
-/// 플레이어가 생성한 벽(돌)의 수명과 체력을 관리하는 컴포넌트.
-/// - Initialize로 HP와 수명을 설정받음
-/// - 시간이 지나거나 HP가 0이 되면 스스로 파괴
-/// </summary>
+// 플레이어가 생성한 벽(돌)의 수명과 체력을 관리하는 컴포넌트.
+// - Initialize로 HP와 수명을 설정받음
+// - 시간이 지나거나 HP가 0이 되면 스스로 파괴
 public class CoverWall : MonoBehaviour
 {
     [Header("Debug Defaults (Initialize를 안 부르면 사용)")]
@@ -26,9 +24,7 @@ public class CoverWall : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// 외부에서 HP/수명을 세팅해주는 함수.
-    /// </summary>
+    // 외부에서 HP/수명을 세팅해주는 함수
     public void Initialize(int hp, float lifetimeSeconds)
     {
         _currentHP = hp;
@@ -53,9 +49,7 @@ public class CoverWall : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// 다른 오브젝트(적, 탄환 등)에서 호출할 수 있는 데미지 함수.
-    /// </summary>
+    // 다른 오브젝트(적, 탄환 등)에서 호출할 수 있는 데미지 함수
     public void TakeDamage(int amount)
     {
         _currentHP -= amount;

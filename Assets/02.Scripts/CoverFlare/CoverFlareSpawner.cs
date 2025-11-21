@@ -1,13 +1,11 @@
 using UnityEngine;
 
-/// <summary>
-/// 플레이어가 우클릭했을 때 벽(커버)을 생성하는 컴포넌트.
-/// - 입력 처리
-/// - 위치 계산 (마우스 위치, 최대 사거리)
-/// - 설치 가능 여부 체크
-/// - 차지/재충전 관리
-/// - CoverWall 프리팹 생성
-/// </summary>
+// 플레이어가 우클릭했을 때 벽(커버)을 생성하는 컴포넌트.
+// - 입력 처리
+// - 위치 계산 (마우스 위치, 최대 사거리)
+// - 설치 가능 여부 체크
+// - 차지/재충전 관리
+// - CoverWall 프리팹 생성
 public class CoverFlareSpawner : MonoBehaviour, ICoverFlareOwner
 {
     [Header("References")]
@@ -39,7 +37,7 @@ public class CoverFlareSpawner : MonoBehaviour, ICoverFlareOwner
     [SerializeField] private float _defaultCoverLifetime = 4f;
         
     [SerializeField] private Vector2 _spawnOffset;  // 벽 생성 위치 오프셋
-    private const int MOUSE_RIGHT_BUTTON = 1;       // 우클릭 버튼 번호
+    private const int MouseRightButton = 1;       // 우클릭 버튼 번호
 
     // --- 런타임 상태 ---
     private int _currentCharges;
@@ -66,20 +64,16 @@ public class CoverFlareSpawner : MonoBehaviour, ICoverFlareOwner
         HandleRecharge(Time.deltaTime);
     }
 
-    /// <summary>
-    /// 우클릭 입력을 처리합니다.
-    /// </summary>
+    // 우클릭 입력을 처리합니다
     private void HandleInput()
     {
-        if (Input.GetMouseButtonDown(MOUSE_RIGHT_BUTTON))
+        if (Input.GetMouseButtonDown(MouseRightButton))
         {
             TrySpawnCoverAtMouse();
         }
     }
 
-    /// <summary>
-    /// 매 프레임 차지 재충전을 처리합니다.
-    /// </summary>
+    // 매 프레임 차지 재충전을 처리합니다
     private void HandleRecharge(float deltaTime)
     {
         if (_currentCharges >= _maxCharges) return;
@@ -94,9 +88,7 @@ public class CoverFlareSpawner : MonoBehaviour, ICoverFlareOwner
         }
     }
 
-    /// <summary>
-    /// 마우스 위치 기준으로 벽 생성 시도 (오케스트레이션).
-    /// </summary>
+    // 마우스 위치 기준으로 벽 생성 시도 (오케스트레이션)
     private void TrySpawnCoverAtMouse()
     {
         if (!CanSpawn())
@@ -123,9 +115,7 @@ public class CoverFlareSpawner : MonoBehaviour, ICoverFlareOwner
         InitializeCoverIfPossible(coverObj);
     }
 
-    /// <summary>
-    /// 스폰 가능한 기본 조건 검사.
-    /// </summary>
+    // 스폰 가능한 기본 조건 검사
     private bool CanSpawn()
     {
         if (_coverPrefab == null) return false;
@@ -134,9 +124,7 @@ public class CoverFlareSpawner : MonoBehaviour, ICoverFlareOwner
         return true;
     }
 
-    /// <summary>
-    /// 마우스 화면 좌표를 월드 좌표(2D z=0)로 변환.
-    /// </summary>
+    /// 마우스 화면 좌표를 월드 좌표(2D z=0)로 변환
     private Vector3 GetMouseWorldPosition()
     {
         Vector3 screen = Input.mousePosition;
@@ -145,9 +133,7 @@ public class CoverFlareSpawner : MonoBehaviour, ICoverFlareOwner
         return world;
     }
 
-    /// <summary>
-    /// 플레이어 기준 최대 사거리 내로 위치를 클램프.
-    /// </summary>
+    /// 플레이어 기준 최대 사거리 내로 위치를 클램프
     private Vector3 ClampToMaxDistance(Vector3 targetWorldPos)
     {
         Vector3 playerPos = transform.position;
@@ -163,25 +149,19 @@ public class CoverFlareSpawner : MonoBehaviour, ICoverFlareOwner
         return targetWorldPos;
     }
 
-    /// <summary>
-    /// 해당 위치가 설치 가능(충돌 없음)한지 검사.
-    /// </summary>
+    /// 해당 위치가 설치 가능(충돌 없음)한지 검사
     private bool IsValidSpawnPosition(Vector3 position)
     {
         return CanPlaceCover(position);
     }
 
-    /// <summary>
-    /// 커버 프리팹을 생성.
-    /// </summary>
+    // 커버 프리팹을 생성
     private GameObject CreateCover(Vector3 position)
     {
         return Instantiate(_coverPrefab, position + (Vector3)_spawnOffset, Quaternion.identity);
     }
 
-    /// <summary>
-    /// 커버월 컴포넌트 초기화 시도.
-    /// </summary>
+    // 커버월 컴포넌트 초기화 시도
     private void InitializeCoverIfPossible(GameObject coverObj)
     {
         if (coverObj != null && coverObj.TryGetComponent(out CoverWall coverWall))
@@ -190,19 +170,15 @@ public class CoverFlareSpawner : MonoBehaviour, ICoverFlareOwner
         }
     }
 
-    /// <summary>
-    /// 벽 설치 가능 여부를 검사합니다.
-    /// - 지정한 반경 내에 blockedLayers가 있으면 설치 불가
-    /// </summary>
+    // 벽 설치 가능 여부를 검사합니다.
+    // - 지정한 반경 내에 blockedLayers가 있으면 설치 불가
     private bool CanPlaceCover(Vector3 position)
     {
         Collider2D hit = Physics2D.OverlapCircle(position, _placementCheckRadius, _blockedLayers);
         return hit == null;
     }
 
-    /// <summary>
-    /// 차지를 1개 소모합니다.
-    /// </summary>
+    // 차지 1개 소모
     private bool ConsumeCharge()
     {
         if (!HasAnyCharge) return false;
@@ -217,9 +193,7 @@ public class CoverFlareSpawner : MonoBehaviour, ICoverFlareOwner
         return true;
     }
 
-    /// <summary>
-    /// 커버플레어의 최대 차지 수(탄창 용량)를 증가시킵니다.
-    /// </summary>
+    // 커버플레어의 최대 차지 수(탄창 용량)를 증가시킵니다.
     public void IncreaseCoverFlareMaxCharges(int amount)
     {
         _maxCharges += amount;
@@ -229,8 +203,6 @@ public class CoverFlareSpawner : MonoBehaviour, ICoverFlareOwner
         {
             _currentCharges = _maxCharges;
         }
-
-        Debug.Log("커버플레어 아이템을 먹었다! 마시쪙~  \n 참고로 나는 CFSpawner.cs 소속이야~");
     }
 
 #if UNITY_EDITOR

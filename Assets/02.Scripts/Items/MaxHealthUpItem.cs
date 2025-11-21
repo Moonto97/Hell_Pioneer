@@ -1,8 +1,6 @@
 using UnityEngine;
 
-/// <summary>
-/// 플레이어의 최대 체력을 증가시키는 장비형/패시브 아이템.
-/// </summary>
+// 플레이어의 최대 체력을 증가시키는 장비형/패시브 아이템
 public class MaxHealthUpItem : ItemPickup
 {
     [Header("Max Health Up Settings")]

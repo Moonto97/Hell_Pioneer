@@ -1,8 +1,6 @@
 using UnityEngine;
 
-/// <summary>
-/// 플레이어의 체력을 회복시키는 소모성 아이템.
-/// </summary>
+// 플레이어의 체력을 회복시키는 소모성 아이템.
 public class HealItem : ItemPickup
 {
     [Header("Heal Settings")]
