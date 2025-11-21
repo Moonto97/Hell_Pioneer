@@ -146,7 +146,7 @@ public class CoverFlareSpawner : MonoBehaviour, ICoverFlareOwner
     {
         Vector3 playerPos = transform.position;
         Vector3 direction = targetWorldPos - playerPos;
-        float distance = direction.magnitude;
+        float distance = direction.sqrMagnitude;
 
         if (distance > _maxSpawnDistance)
         {

@@ -1,146 +1,147 @@
+using System;
 using UnityEngine;
 
 // 플레이어의 스탯과 체력을 관리하는 컴포넌트.
-// - 초기/현재 HP 이동 속도 공속(연사력)
-// - 피격 처리, 1초 무적 + 깜빡이기
-// - IPlayerHealth, IPlayerFireRate 구현
+// - 초기/현재 HP, 이동 속도, 공속
+// - 피격 처리 (이벤트 기반)
+// - 외부 표현(피격/사망 연출)은 이벤트 구독자가 담당
 public class PlayerStats : MonoBehaviour, IPlayerHealth, IPlayerFireRate
 {
     [Header("Initial Stats")]
-    [SerializeField] private int _initialMaxHp = 10;        //시작 최대 체력
-    [SerializeField] private float _initialMoveSpeed = 5f;  //시작 이동 속도
-    [SerializeField] private float _initialFireRate = 3f;   //시작 공속. 예: 초당 3발
+    [SerializeField] private int _initialMaxHp = 10;
+    [SerializeField] private float _initialMoveSpeed = 5f;
+    [SerializeField] private float _initialFireRate = 3f; // 초당 몇 발
 
-    private const float MinFireRate = 0.1f;           // 최소 공속 제한 (아예 0 이하로 가는 걸 방지)
+    private const float MinFireRate = 0.1f;
 
     // --- 런타임 상태 ---
-    public int MaxHp { get; private set; }      // 최대 체력
-    public int CurrentHp { get; private set; }  // 현재 체력
-
+    public int MaxHp { get; private set; }
+    public int CurrentHp { get; private set; }
     public float MoveSpeed { get; private set; }
     public float FireRate { get; private set; }
 
-    private PlayerHitFeedback _hitFeedback;
+    #region Events
+    // 데미지 적용 전에 호출. 구독자 중 하나라도 false 반환하면 피해 무효화.
+    public event Func<int, bool> OnBeforeDamage;
+    // 실제 데미지 적용 후 호출 (damage, currentHp, maxHp)
+    public event Action<int, int, int> OnDamageTaken;
+    public event Action OnDeath;
+    // 회복 (healAmount, currentHp)
+    public event Action<int, int> OnHealed;
+    // 최대 체력 증가 (increaseAmount, newMaxHp)
+    public event Action<int, int> OnMaxHealthIncreased;
+    // 연사력 변경 (newFireRate)
+    public event Action<float> OnFireRateChanged;
+    #endregion
 
     private void Awake()
     {
         InitializeStats();
-        _hitFeedback = GetComponent<PlayerHitFeedback>();
     }
 
     private void InitializeStats()
     {
         MaxHp = _initialMaxHp;
         CurrentHp = MaxHp;
-
         MoveSpeed = _initialMoveSpeed;
         FireRate = _initialFireRate;
     }
 
-    #region IPlayerHealth 구현 + 체력 관련 로직
+    #region IPlayerHealth 구현
 
     public void Heal(float percent)
     {
-        // 죽은 상태이거나 회복 비율이 0 이하이면 무시
-        if (CurrentHp <= 0 || percent <= 0f)
-        {
-            return;
-        }
+        if (CurrentHp <= 0 || percent <= 0f) return;
 
-        // 최대 체력의 amount 비율만큼 회복량 계산
         int healAmount = Mathf.RoundToInt(MaxHp * percent);
-
-        // 현재 체력에 더하고 MaxHp를 넘지 않도록 클램프
+        int before = CurrentHp;
         CurrentHp = Mathf.Clamp(CurrentHp + healAmount, 0, MaxHp);
+        int applied = CurrentHp - before;
 
-        // TODO: HP UI 업데이트 이벤트 등
-
+        if (applied > 0)
+        {
+            OnHealed?.Invoke(applied, CurrentHp);
+        }
     }
 
-    // 최대 체력을 amount 비율만큼 증가시키는 메서드
     public void IncreaseMaxHealth(float percent)
     {
-        if (percent <= 0f)
-        {
-            return;
-        }
+        if (percent <= 0f) return;
 
-        // 현재 MaxHp의 amount 비율만큼 증가량 계산
         int increaseAmount = Mathf.RoundToInt(MaxHp * percent);
-
         MaxHp += increaseAmount;
 
-        // 기획에 따라: 최대 체력이 늘 때 현재 체력도 함께 올릴지 결정
-        CurrentHp += increaseAmount;
-        CurrentHp = Mathf.Clamp(CurrentHp, 0, MaxHp);
+        // 기획: 최대체력 증가 시 현재 체력도 동일량 증가 (클램프)
+        CurrentHp = Mathf.Clamp(CurrentHp + increaseAmount, 0, MaxHp);
 
-        // TODO: HP UI 업데이트 이벤트 등
-        
+        OnMaxHealthIncreased?.Invoke(increaseAmount, MaxHp);
     }
 
-    // 외부(적, 탄환 등)에서 피해를 줄 때 호출하는 메서드.
     public void TakeDamage(int amount)
     {
-        if (amount <= 0)
-            return;
+        if (amount <= 0) return;
+        if (CurrentHp <= 0) return; // 이미 사망
 
-        if (_hitFeedback != null && _hitFeedback.IsInvincible)
-            return;
+        // 데미지 적용 가능 여부(무적 등) 이벤트로 위임
+        if (OnBeforeDamage != null)
+        {
+            foreach (Func<int, bool> del in OnBeforeDamage.GetInvocationList())
+            {
+                try
+                {
+                    if (!del(amount))
+                    {
+                        return; // 구독자 하나라도 false → 피해 무시
+                    }
+                }
+                catch (Exception e)
+                {
+                    Debug.LogException(e);
+                    // 예외 발생 시 해당 구독자만 무시하고 계속 진행
+                }
+            }
+        }
 
         CurrentHp -= amount;
 
         if (CurrentHp <= 0)
         {
             CurrentHp = 0;
-
-            if (_hitFeedback != null)
-                _hitFeedback.PlayDeathFeedback();
+            OnDamageTaken?.Invoke(amount, CurrentHp, MaxHp);
+            OnDeath?.Invoke();
         }
         else
         {
-            if (_hitFeedback != null)
-                _hitFeedback.StartHitFeedback();
+            OnDamageTaken?.Invoke(amount, CurrentHp, MaxHp);
         }
-
-        // TODO: HP UI 업데이트 이벤트 등
     }
-
 
     #endregion
 
-    #region IPlayerFireRate 구현 + 공속 관련 로직
+    #region IPlayerFireRate 구현
 
     public void IncreaseFireRate(float amount)
     {
-        if (amount <= 0f)
-        {
-            return;
-        }
+        if (amount <= 0f) return;
 
-        // 현재 연사력에 amount 배수를 곱한다. (예: 1.2f → 20% 증가)
         FireRate *= amount;
-
-        // 안전장치: 0 이하로 내려가면 안 되도록
         if (FireRate < MinFireRate)
         {
             FireRate = MinFireRate;
         }
 
-        // TODO: 무기/발사 시스템에 FireRate 변경 알리기 (이벤트 등)
+        OnFireRateChanged?.Invoke(FireRate);
     }
-
 
     #endregion
 
-    #region MoveSpeed 관련 유틸리티
+    #region MoveSpeed 유틸
 
-    // 이동 속도를 절대값으로 설정합니다.(버프/디버프 등은 별도 로직에서 관리 가능)
     public void SetMoveSpeed(float newSpeed)
     {
         MoveSpeed = Mathf.Max(0f, newSpeed);
     }
 
-    /// 이동 속도를 amount만큼 가감
     public void AddMoveSpeed(float amount)
     {
         SetMoveSpeed(MoveSpeed + amount);

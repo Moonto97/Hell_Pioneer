@@ -1,8 +1,7 @@
 using UnityEngine;
 
 // 바닥에 놓인 "픽업 가능한 아이템"의 공통 베이스 클래스
-// - 2D 트리거 충돌 감지
-// - Player 태그 체크
+// - PlayerStats 컴포넌트 체크
 // - 픽업 후 오브젝트 제거/비활성화
 // 구체적인 효과는 HandlePickup에서 구현
 [RequireComponent(typeof(Collider2D))]
