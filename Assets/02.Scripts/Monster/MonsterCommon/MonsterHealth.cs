@@ -2,17 +2,17 @@ using UnityEngine;
 
 public class MonsterHealth : MonoBehaviour
 {
-    private MonsterStat _stat;
+    private MonsterStat _monsterStat;
     private int _currentHealth;
     
     private void Awake()
     {
-        _stat = GetComponent<MonsterStat>();
+        _monsterStat = GetComponent<MonsterStat>();
     }
     
     private void Start()
     {
-        _currentHealth = _stat.MaxHealth;
+        _currentHealth = _monsterStat.MaxHealth;
     }
     
     public void TakeDamage(int damage)
