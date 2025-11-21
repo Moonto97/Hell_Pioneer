@@ -4,6 +4,7 @@ public class MonsterHealth : MonoBehaviour
 {
     private MonsterStat _monsterStat;
     private int _currentHealth;
+    public event System.Action<MonsterHealth> OnMonsterDied;
     
     private void Awake()
     {
@@ -12,7 +13,7 @@ public class MonsterHealth : MonoBehaviour
     
     private void Start()
     {
-        _currentHealth = _monsterStat.MaxHealth;
+        ResetHealth();
     }
     
     public void TakeDamage(int damage)
@@ -27,7 +28,11 @@ public class MonsterHealth : MonoBehaviour
 
     private void Die()
     {
-        // TODO : 오브젝트 풀링으로 관리
-        Destroy(gameObject);
+        OnMonsterDied?.Invoke(this);
+    }
+    
+    public void ResetHealth()
+    {
+        _currentHealth = _monsterStat.MaxHealth;
     }
 }

@@ -342,7 +342,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0765515c795b3c0498c13486ac237b93, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _monsterLevel: 1
-  _maxHealth: 2
-  _attackDamage: 1
-  _speed: 2
