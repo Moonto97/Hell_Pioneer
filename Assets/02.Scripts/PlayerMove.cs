@@ -26,8 +26,6 @@ public class PlayerMove : MonoBehaviour
     {
         float h = Input.GetAxisRaw("Horizontal");
         float v = Input.GetAxisRaw("Vertical");
-        
-        Vector2 moveInput = new Vector2(h, v);
 
         Vector2 direction = new Vector2(h, v);
         direction.Normalize();
