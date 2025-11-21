@@ -42,7 +42,7 @@ public class PlayerStats : MonoBehaviour, IPlayerHealth, IPlayerFireRate
     public void Heal(float percent)
     {
         // 죽은 상태이거나 회복 비율이 0 이하이면 무시
-        if (percent <= 0f)
+        if (CurrentHp <= 0 || percent <= 0f)
         {
             return;
         }

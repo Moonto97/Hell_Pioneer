@@ -204,13 +204,13 @@ public class CoverFlareSpawner : MonoBehaviour, ICoverFlareOwner
     // 커버플레어의 최대 차지 수(탄창 용량)를 증가시킵니다.
     public void IncreaseCoverFlareMaxCharges(int amount)
     {
+        if (amount <= 0)
+        {
+            return;
+        }
+
         _maxCharges += amount;
         _currentCharges += amount;
-
-        if (_currentCharges > _maxCharges)
-        {
-            _currentCharges = _maxCharges;
-        }
     }
 
 #if UNITY_EDITOR

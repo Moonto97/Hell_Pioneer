@@ -75,7 +75,7 @@ public class PlayerHitFeedback : MonoBehaviour
     {
         foreach (var sr in _spriteRenderers)
         {
-            sr.enabled = visible;
+            if (sr != null) sr.enabled = visible;
         }
     }
 

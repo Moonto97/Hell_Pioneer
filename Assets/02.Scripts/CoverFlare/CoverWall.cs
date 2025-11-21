@@ -52,6 +52,11 @@ public class CoverWall : MonoBehaviour
     // 다른 오브젝트(적, 탄환 등)에서 호출할 수 있는 데미지 함수
     public void TakeDamage(int amount)
     {
+        if (amount <= 0)
+        {
+            return;
+        }
+
         _currentHP -= amount;
         if (_currentHP <= 0)
         {
