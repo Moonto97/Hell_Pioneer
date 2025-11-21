@@ -28,7 +28,7 @@ public class ExplosionAttack : MonoBehaviour, IMonsterAttack
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (!other.CompareTag(PlayerTag)) return;
+        if (other.CompareTag(PlayerTag) == false) return;
         
         Attack();
     }
