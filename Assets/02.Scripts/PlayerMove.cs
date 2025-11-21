@@ -21,5 +21,13 @@ public class PlayerMove : MonoBehaviour
 
         Vector3 movement = new Vector3(h, v, 0f);
         transform.Translate(movement * _speed * Time.deltaTime);
+
+        MakePlayerDistanceField();
+    }
+    
+    // TODO : 움직일때, 방해물 생성시에만 호출
+    void MakePlayerDistanceField()
+    {
+        BFSManager.Instance.BuildDistanceField(transform.position);
     }
 }
