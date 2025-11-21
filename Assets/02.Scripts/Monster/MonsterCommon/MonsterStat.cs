@@ -32,7 +32,7 @@ public class MonsterStat : MonoBehaviour
     {
         if (!_levelData.ContainsKey(level))
         {
-            Debug.LogWarning($"Monster Level {level} is out of range. Using max level.");
+            Debug.LogWarning($"레벨 {level} 이 최고레벨을 넘어갑니다. 가장 큰 레벨을 사용합니다.");
             level = GetMaxLevel();
         }
 

@@ -313,7 +313,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5822985543025248580}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2984e76e3aee225418f088ecd9f8e8e2, type: 3}
   m_Name: 
@@ -342,7 +342,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0765515c795b3c0498c13486ac237b93, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _monsterLevel: 1
-  _maxHealth: 2
-  _attackDamage: 1
-  _speed: 2

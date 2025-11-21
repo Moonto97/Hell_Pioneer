@@ -4,13 +4,13 @@ using UnityEngine;
 public class MonsterSpawner : MonoBehaviour
 {
     [Header("스폰 간격 설정")]
-    public float MinSpawnInterval = 2f;
-    public float MaxSpawnInterval = 4f;
+    [SerializeField] private float _minSpawnInterval = 2f;
+    [SerializeField] private float _maxSpawnInterval = 4f;
 
     [Header("몬스터 레벨 가중치")] 
-    public float Level1Weight = 50f;
-    public float Level2Weight = 30f;
-    public float Level3Weight = 20f;
+    [SerializeField] private float _level1Weight = 50f;
+    [SerializeField] private float _level2Weight = 30f;
+    [SerializeField] private float _level3Weight = 20f;
     
     private float _spawnInterval;
 
@@ -31,7 +31,7 @@ public class MonsterSpawner : MonoBehaviour
 
     private void SetRandomInterval()
     {
-        _spawnInterval = Random.Range(MinSpawnInterval, MaxSpawnInterval);
+        _spawnInterval = Random.Range(_minSpawnInterval, _maxSpawnInterval);
     }
 
     private void SpawnMonster()
@@ -41,15 +41,15 @@ public class MonsterSpawner : MonoBehaviour
     
     private int GetRandomLevelWeighted()
     {
-        float total = Level1Weight + Level2Weight + Level3Weight;
+        float total = _level1Weight + _level2Weight + _level3Weight;
         float rand = Random.Range(0, total);
 
-        if (rand < Level1Weight)
+        if (rand < _level1Weight)
             return 1;
 
-        rand -= Level1Weight;
+        rand -= _level1Weight;
 
-        if (rand < Level2Weight)
+        if (rand < _level2Weight)
             return 2;
 
         return 3;

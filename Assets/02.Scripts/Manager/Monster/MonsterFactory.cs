@@ -51,7 +51,7 @@ public class MonsterFactory : MonoBehaviour
         MonsterHealth monsterHealth = monster.GetComponent<MonsterHealth>();
         monsterHealth.OnMonsterDied += HandleMonsterDeath;
         
-        SetMonsterState(monster, monsterLevel);
+        SetMonsterState(monsterHealth, monsterLevel);
         
         return monster;
     }
@@ -62,10 +62,9 @@ public class MonsterFactory : MonoBehaviour
         _monsterPool.Enqueue(monster);
     }
 
-    private void SetMonsterState(GameObject monster, int monsterLevel)
+    private void SetMonsterState(MonsterHealth monsterHealth, int monsterLevel)
     {
-        MonsterStat monsterStat = monster.GetComponent<MonsterStat>();
-        MonsterHealth monsterHealth = monster.GetComponent<MonsterHealth>();
+        MonsterStat monsterStat = monsterHealth.gameObject.GetComponent<MonsterStat>();
         monsterStat.SetMonsterLevel(monsterLevel);
         monsterHealth.ResetHealth();
     }
