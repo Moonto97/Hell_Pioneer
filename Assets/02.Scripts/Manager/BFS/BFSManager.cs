@@ -21,9 +21,6 @@ public class BFSManager : MonoBehaviour
         Instance = this;
     }
 
-    /// <summary>
-    /// 특정 노드의 유효한 이웃 노드를 반환 (코너컷 포함 검증 완비)
-    /// </summary>
     private IEnumerable<Node> GetNeighbors(Node current)
     {
         Node[,] grid = GridManager.Instance.Grid;
