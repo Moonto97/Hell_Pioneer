@@ -9,11 +9,12 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4542682258238385374}
-  - component: {fileID: 2096567519947685736}
-  - component: {fileID: 5454689350743491812}
   - component: {fileID: 3343346467014518910}
   - component: {fileID: 253163596318459203}
+  - component: {fileID: 2096567519947685736}
+  - component: {fileID: 5454689350743491812}
   - component: {fileID: 1541470146519141092}
+  - component: {fileID: 6662246698837992995}
   m_Layer: 0
   m_Name: MK_Player_CF_Items
   m_TagString: Player
@@ -37,45 +38,6 @@ Transform:
   - {fileID: 2582269771104050584}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2096567519947685736
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6966117122673598614}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b9e36dc551fc3ff4a813bebe5873359f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _coverPrefab: {fileID: 7674729880879680140, guid: e485289919cbc76468abbae4b1a7553f, type: 3}
-  _camera: {fileID: 0}
-  _maxSpawnDistance: 9
-  _blockedLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  _placementCheckRadius: 0.25
-  _maxCharges: 9
-  _rechargeTimePerCharge: 0.01
-  _defaultCoverHP: 3
-  _defaultCoverLifetime: 4
-  _spawnOffset: {x: 0, y: 0.5}
---- !u!114 &5454689350743491812
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6966117122673598614}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e373abd1582328e43ae3b3e041dae489, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _initialMaxHp: 10
-  _initialMoveSpeed: 5
-  _initialFireRate: 3
 --- !u!70 &3343346467014518910
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -140,6 +102,43 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &2096567519947685736
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6966117122673598614}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9e36dc551fc3ff4a813bebe5873359f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _coverPrefab: {fileID: 7674729880879680140, guid: e485289919cbc76468abbae4b1a7553f, type: 3}
+  _camera: {fileID: 0}
+  _maxSpawnDistance: 9
+  _blockedLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  _placementCheckRadius: 0.25
+  _maxCharges: 9
+  _rechargeTimePerCharge: 0.01
+  _spawnOffset: {x: 0, y: 0.5}
+--- !u!114 &5454689350743491812
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6966117122673598614}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e373abd1582328e43ae3b3e041dae489, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _initialMaxHp: 10
+  _initialMoveSpeed: 5
+  _initialFireRate: 3
 --- !u!114 &1541470146519141092
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -154,6 +153,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _hitInvincibleDuration: 1
   _hitBlinkInterval: 0.1
+--- !u!114 &6662246698837992995
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6966117122673598614}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b22f6d95ab40457468bfa7d4385933a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _playerStats: {fileID: 5454689350743491812}
+  _currentWeapon: {fileID: 0}
+  _gunPivot: {fileID: 0}
+  _camera: {fileID: 0}
+  _invertAim: 0
+  _defaultFireRate: 3
 --- !u!1 &8928562739684788194
 GameObject:
   m_ObjectHideFlags: 0

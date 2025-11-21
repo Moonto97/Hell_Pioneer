@@ -10,7 +10,7 @@ public class PlayerStats : MonoBehaviour, IPlayerHealth, IPlayerFireRate
     [Header("Initial Stats")]
     [SerializeField] private int _initialMaxHp = 10;
     [SerializeField] private float _initialMoveSpeed = 5f;
-    [SerializeField] private float _initialFireRate = 3f; // 초당 몇 발
+    [SerializeField] private float _initialFireRate = 2f; // 초당 몇 발
 
     private const float MinFireRate = 0.1f;
 

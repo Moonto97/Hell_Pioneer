@@ -49,23 +49,27 @@ public class PlayerHitFeedback : MonoBehaviour
         UpdateInvincibility(Time.deltaTime);
     }
 
+    // 데미지 적용 전 처리
     private bool HandleBeforeDamage(int dmg)
     {
         // 무적이면 피해 무효화
         return !_isInvincible && !_isDead;
     }
 
+    // 데미지 적용 후 처리
     private void HandleDamageTaken(int dmg, int currentHp, int maxHp)
     {
         if (_isDead) return;
         StartHitFeedback();
     }
 
+    // 사망 처리
     private void HandleDeath()
     {
         PlayDeathFeedback();
     }
 
+    // 피격 피드백 시작
     public void StartHitFeedback()
     {
         _isInvincible = true;
@@ -82,6 +86,7 @@ public class PlayerHitFeedback : MonoBehaviour
         // 추가 사망 이펙트 / 애니메이션 트리거 가능
     }
 
+    // 무적 상태 업데이트
     private void UpdateInvincibility(float deltaTime)
     {
         if (!_isInvincible) return;
