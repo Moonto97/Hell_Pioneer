@@ -1,11 +1,10 @@
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class ExplosionAttack : MonoBehaviour, IMonsterAttack
 {
     private MonsterStat _monsterStat;
     private MonsterHealth _health;
-    private string _playerTag = "Player";
+    private const string PlayerTag = "Player";
     private void Awake()
     {
         _monsterStat = GetComponentInParent<MonsterStat>();
@@ -29,7 +28,7 @@ public class ExplosionAttack : MonoBehaviour, IMonsterAttack
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (!other.CompareTag(_playerTag)) return;
+        if (!other.CompareTag(PlayerTag)) return;
         
         Attack();
     }
