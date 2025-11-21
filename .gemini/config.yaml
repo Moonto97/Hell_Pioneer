@@ -96,3 +96,4 @@ custom_instructions: |
   8. Use PascalCase for constants
   9. Use [SerializeField] only for uGUI components
   10. Provide Korean comments for better understanding (한국어 주석 포함)
+11. apply the Boy Scout Rule: leave the code cleaner than you found it.
