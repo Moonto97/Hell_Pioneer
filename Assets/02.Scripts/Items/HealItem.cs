@@ -6,7 +6,7 @@ using UnityEngine;
 public class HealItem : ItemPickup
 {
     [Header("Heal Settings")]
-    [SerializeField] private float _healMagnification = 0.3f;      // 회복 배율
+    [SerializeField] private float _healPercent = 0.3f;      // 회복 배율
 
     protected override void HandlePickup(Collider2D other)
     {
@@ -20,7 +20,7 @@ public class HealItem : ItemPickup
         }
 
         // 1. 체력 회복
-        playerHealth.Heal(_healMagnification);
+        playerHealth.Heal(_healPercent);
 
         // 2. TODO: 회복 이펙트, 사운드, UI 메세지 등
     }

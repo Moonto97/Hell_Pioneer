@@ -19,6 +19,8 @@ public class PlayerStats : MonoBehaviour, IPlayerHealth, IPlayerFireRate
     [SerializeField] private float _hitInvincibleDuration = 1f;     // 피격 후 무적 지속 시간
     [SerializeField] private float _hitBlinkInterval = 0.1f;        // 피격 후 깜빡임 간격
 
+    const float MIN_FIRE_RATE = 0.1f;           // 최소 공속 제한 (아예 0 이하로 가는 걸 방지)
+
     // --- 런타임 상태 ---
     public int MaxHp { get; private set; }      // 최대 체력
     public int CurrentHp { get; private set; }  // 현재 체력
@@ -66,36 +68,36 @@ public class PlayerStats : MonoBehaviour, IPlayerHealth, IPlayerFireRate
 
     #region IPlayerHealth 구현 + 체력 관련 로직
 
-    public void Heal(float amount)
+    public void Heal(float percent)
     {
         // 죽은 상태이거나 회복 비율이 0 이하이면 무시
-        if (_isDead || amount <= 0f)
+        if (_isDead || percent <= 0f)
         {
             return;
         }
 
         // 최대 체력의 amount 비율만큼 회복량 계산
-        int healAmount = Mathf.RoundToInt(MaxHp * amount);
+        int healAmount = Mathf.RoundToInt(MaxHp * percent);
 
         // 현재 체력에 더하고 MaxHp를 넘지 않도록 클램프
         CurrentHp = Mathf.Clamp(CurrentHp + healAmount, 0, MaxHp);
 
         // TODO: HP UI 업데이트 이벤트 등
-        Debug.Log($"회복템을 먹었다! MaxHP의 {amount * 100f}% 회복 ( +{healAmount} ) \n 참고로 나는 PlayerStats.cs 소속이야~");
+        //Debug.Log($"회복템을 먹었다! MaxHP의 {amount * 100f}% 회복 ( +{healAmount} ) \n 참고로 나는 PlayerStats.cs 소속이야~");
     }
 
     /// <summary>
     /// 최대 체력을 amount 비율만큼 증가시키는 메서드
     /// </summary>
-    public void IncreaseMaxHealth(float amount)
+    public void IncreaseMaxHealth(float percent)
     {
-        if (amount <= 0f)
+        if (percent <= 0f)
         {
             return;
         }
 
         // 현재 MaxHp의 amount 비율만큼 증가량 계산
-        int increaseAmount = Mathf.RoundToInt(MaxHp * amount);
+        int increaseAmount = Mathf.RoundToInt(MaxHp * percent);
 
         MaxHp += increaseAmount;
 
@@ -104,7 +106,7 @@ public class PlayerStats : MonoBehaviour, IPlayerHealth, IPlayerFireRate
         CurrentHp = Mathf.Clamp(CurrentHp, 0, MaxHp);
 
         // TODO: HP UI 업데이트 이벤트 등
-        Debug.Log($"최대 체력이 증가했다! MaxHP의 {amount * 100f}% 증가 ( +{increaseAmount} ) \n 참고로 나는 PlayerStats.cs 소속이야~");
+        //Debug.Log($"최대 체력이 증가했다! MaxHP의 {amount * 100f}% 증가 ( +{increaseAmount} ) \n 참고로 나는 PlayerStats.cs 소속이야~");
     }
 
     /// <summary>
@@ -216,13 +218,13 @@ public class PlayerStats : MonoBehaviour, IPlayerHealth, IPlayerFireRate
         FireRate *= amount;
 
         // 안전장치: 0 이하로 내려가면 안 되도록
-        if (FireRate < 0.1f)
+        if (FireRate < MIN_FIRE_RATE)
         {
-            FireRate = 0.1f;
+            FireRate = MIN_FIRE_RATE;
         }
 
         // TODO: 무기/발사 시스템에 FireRate 변경 알리기 (이벤트 등)
-        Debug.Log($"연사력이 증가했다! 배율: {amount}, 현재 연사력: {FireRate} \n 참고로 나는 PlayerStats.cs 소속이야~");
+        //Debug.Log($"연사력이 증가했다! 배율: {amount}, 현재 연사력: {FireRate} \n 참고로 나는 PlayerStats.cs 소속이야~");
     }
 
 

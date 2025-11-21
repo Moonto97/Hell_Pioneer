@@ -49,7 +49,7 @@ public abstract class ItemPickup : MonoBehaviour
     /// </summary>
     protected virtual bool CanPickUp(Collider2D other)
     {
-        return other.CompareTag("Player");
+        return other.TryGetComponent<PlayerStats>(out _);
     }
 
     /// <summary>

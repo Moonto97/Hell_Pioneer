@@ -12,5 +12,5 @@ public interface IPlayerHealth
     /// (구현체에서 현재 체력 보정, UI 업데이트 등을 처리)
     /// </summary>
     /// <param name="amount">증가시킬 최대 체력량</param>
-    void IncreaseMaxHealth(float amount);
+    void IncreaseMaxHealth(float percent);
 }

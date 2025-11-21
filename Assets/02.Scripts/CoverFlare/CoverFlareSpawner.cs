@@ -39,11 +39,10 @@ public class CoverFlareSpawner : MonoBehaviour, ICoverFlareOwner
     [SerializeField] private float _defaultCoverLifetime = 4f;
         
     [SerializeField] private Vector2 _spawnOffset;  // 벽 생성 위치 오프셋
+    private const int MOUSE_RIGHT_BUTTON = 1;       // 우클릭 버튼 번호
 
-
-// --- 런타임 상태 ---
-// 현재 상태를 저장하고, 외부에서 읽을 수 있도록 노출하는 부분
-private int _currentCharges;
+    // --- 런타임 상태 ---
+    private int _currentCharges;
     private float _rechargeTimer;
 
     public int CurrentCharges => _currentCharges;
@@ -52,13 +51,11 @@ private int _currentCharges;
 
     private void Awake()
     {
-        // 카메라 레퍼런스가 비어있으면 메인 카메라 사용
         if (_camera == null)
         {
             _camera = Camera.main;
         }
 
-        // 시작할 때 차지를 꽉 채운 상태로 시작
         _currentCharges = _maxCharges;
         _rechargeTimer = 0f;
     }
@@ -74,8 +71,7 @@ private int _currentCharges;
     /// </summary>
     private void HandleInput()
     {
-        // 마우스 오른쪽 버튼 Down
-        if (Input.GetMouseButtonDown(1))
+        if (Input.GetMouseButtonDown(MOUSE_RIGHT_BUTTON))
         {
             TrySpawnCoverAtMouse();
         }
@@ -86,7 +82,6 @@ private int _currentCharges;
     /// </summary>
     private void HandleRecharge(float deltaTime)
     {
-        // 이미 최대 차지면 타이머 돌릴 필요 없음
         if (_currentCharges >= _maxCharges) return;
         if (_rechargeTimePerCharge <= 0f) return;
 
@@ -95,67 +90,101 @@ private int _currentCharges;
         if (_rechargeTimer <= 0f)
         {
             _currentCharges++;
-
-            // 아직 최대가 아니면 다시 타이머 세팅
-            if (_currentCharges < _maxCharges)
-            {
-                _rechargeTimer = _rechargeTimePerCharge;
-            }
-            else
-            {
-                _rechargeTimer = 0f;
-            }
+            _rechargeTimer = _currentCharges < _maxCharges ? _rechargeTimePerCharge : 0f;
         }
     }
 
     /// <summary>
-    /// 마우스 위치 기준으로 벽 생성 시도.
+    /// 마우스 위치 기준으로 벽 생성 시도 (오케스트레이션).
     /// </summary>
     private void TrySpawnCoverAtMouse()
     {
-        if (_coverPrefab == null || _camera == null)
-            return;
-
-        if (!HasAnyCharge)
+        if (!CanSpawn())
         {
-            // TODO: UI로 "차지가 없습니다" 같은 피드백 주기
+            // TODO: UI 피드백 (차지 부족 / 프리팹 누락 / 카메라 없음)
             return;
         }
 
-        // 1) 마우스 화면 좌표 → 월드 좌표로 변환
-        Vector3 mouseScreenPos = Input.mousePosition;
-        Vector3 mouseWorldPos = _camera.ScreenToWorldPoint(mouseScreenPos);
-        mouseWorldPos.z = 0f;  // 2D라서 z는 0 고정
+        Vector3 mouseWorldPos = GetMouseWorldPosition();
+        Vector3 clampedPos = ClampToMaxDistance(mouseWorldPos);
 
-        // 2) 플레이어 위치 기준 최대 사거리 제한
+        if (!IsValidSpawnPosition(clampedPos))
+        {
+            // TODO: 설치 불가 이펙트/사운드
+            return;
+        }
+
+        if (!ConsumeCharge())
+        {
+            return;
+        }
+
+        GameObject coverObj = CreateCover(clampedPos);
+        InitializeCoverIfPossible(coverObj);
+    }
+
+    /// <summary>
+    /// 스폰 가능한 기본 조건 검사.
+    /// </summary>
+    private bool CanSpawn()
+    {
+        if (_coverPrefab == null) return false;
+        if (_camera == null) return false;
+        if (!HasAnyCharge) return false;
+        return true;
+    }
+
+    /// <summary>
+    /// 마우스 화면 좌표를 월드 좌표(2D z=0)로 변환.
+    /// </summary>
+    private Vector3 GetMouseWorldPosition()
+    {
+        Vector3 screen = Input.mousePosition;
+        Vector3 world = _camera.ScreenToWorldPoint(screen);
+        world.z = 0f;
+        return world;
+    }
+
+    /// <summary>
+    /// 플레이어 기준 최대 사거리 내로 위치를 클램프.
+    /// </summary>
+    private Vector3 ClampToMaxDistance(Vector3 targetWorldPos)
+    {
         Vector3 playerPos = transform.position;
-        Vector3 direction = mouseWorldPos - playerPos;
+        Vector3 direction = targetWorldPos - playerPos;
         float distance = direction.magnitude;
 
         if (distance > _maxSpawnDistance)
         {
             direction.Normalize();
-            mouseWorldPos = playerPos + direction * _maxSpawnDistance;
+            return playerPos + direction * _maxSpawnDistance;
         }
 
-        // 3) 해당 위치에 설치 가능한지(충돌 체크)
-        if (CanPlaceCover(mouseWorldPos) == false)
-        {
-            // TODO: "설치 불가" 이펙트나 사운드
-            return;
-        }
+        return targetWorldPos;
+    }
 
-        // 4) 실제로 차지 소모
-        if (ConsumeCharge() == false)
-        {
-            return;
-        }
+    /// <summary>
+    /// 해당 위치가 설치 가능(충돌 없음)한지 검사.
+    /// </summary>
+    private bool IsValidSpawnPosition(Vector3 position)
+    {
+        return CanPlaceCover(position);
+    }
 
-        // 5) 프리팹 생성
-        GameObject coverObj = Instantiate(_coverPrefab, mouseWorldPos + (Vector3)_spawnOffset, Quaternion.identity);
+    /// <summary>
+    /// 커버 프리팹을 생성.
+    /// </summary>
+    private GameObject CreateCover(Vector3 position)
+    {
+        return Instantiate(_coverPrefab, position + (Vector3)_spawnOffset, Quaternion.identity);
+    }
 
-        // 6) 생성된 벽에 HP/수명 세팅
-        if (coverObj.TryGetComponent(out CoverWall coverWall))
+    /// <summary>
+    /// 커버월 컴포넌트 초기화 시도.
+    /// </summary>
+    private void InitializeCoverIfPossible(GameObject coverObj)
+    {
+        if (coverObj != null && coverObj.TryGetComponent(out CoverWall coverWall))
         {
             coverWall.Initialize(_defaultCoverHP, _defaultCoverLifetime);
         }
@@ -176,11 +205,10 @@ private int _currentCharges;
     /// </summary>
     private bool ConsumeCharge()
     {
-        if (HasAnyCharge == false) return false;
+        if (!HasAnyCharge) return false;
 
         _currentCharges--;
 
-        // 처음 차지를 소모하면 재충전 타이머 시작
         if (_currentCharges < _maxCharges && _rechargeTimer <= 0f)
         {
             _rechargeTimer = _rechargeTimePerCharge;
@@ -191,32 +219,21 @@ private int _currentCharges;
 
     /// <summary>
     /// 커버플레어의 최대 차지 수(탄창 용량)를 증가시킵니다.
-    /// 아이템 등의 효과에서 호출됩니다.
     /// </summary>
-    /// <param name="amount">증가시킬 최대 차지 수</param>
     public void IncreaseCoverFlareMaxCharges(int amount)
     {
         _maxCharges += amount;
-
-        // 기획 선택지:
-        // 1) 현재 차지는 그대로 두고 최대치만 늘린다
-        // 2) 새로 열린 만큼 현재 차지도 채워준다 (아래 코드처럼)
-
         _currentCharges += amount;
 
-        // 현재 차지는 최대치를 넘지 않게 클램프
         if (_currentCharges > _maxCharges)
         {
             _currentCharges = _maxCharges;
         }
 
-        // TODO: 차지 UI가 있다면 여기서 갱신 이벤트 날리면 좋음
         Debug.Log("커버플레어 아이템을 먹었다! 마시쪙~  \n 참고로 나는 CFSpawner.cs 소속이야~");
     }
 
-
 #if UNITY_EDITOR
-    // 에디터에서 플레이어 주변에 최대 사거리 / 설치 체크 반경을 시각화
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.yellow;
