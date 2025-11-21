@@ -28,16 +28,9 @@ public class CoverFlareSpawner : MonoBehaviour, ICoverFlareOwner
 
     [Tooltip("차지 1개가 재충전되는 데 걸리는 시간(초)")]
     [SerializeField] private float _rechargeTimePerCharge = 5f;
-
-    [Header("Cover Defaults")]
-    [Tooltip("생성되는 벽의 기본 체력")]
-    [SerializeField] private int _defaultCoverHP = 3;
-
-    [Tooltip("생성되는 벽의 기본 유지 시간(초)")]
-    [SerializeField] private float _defaultCoverLifetime = 4f;
         
     [SerializeField] private Vector2 _spawnOffset;  // 벽 생성 위치 오프셋
-    private const int MouseRightButton = 1;       // 우클릭 버튼 번호
+    private const int MouseRightButton = 1;         // 우클릭 버튼 번호
 
     // --- 런타임 상태 ---
     private int _currentCharges;
@@ -119,8 +112,8 @@ public class CoverFlareSpawner : MonoBehaviour, ICoverFlareOwner
             return;
         }
 
-        GameObject coverObj = CreateCover(clampedPos);
-        InitializeCoverIfPossible(coverObj);
+        // 프리팹 생성만 담당. 속성 초기화는 CoverWall 쪽에서 처리.
+        CreateCover(clampedPos);
     }
 
     // 스폰 가능한 기본 조건 검사
@@ -146,12 +139,14 @@ public class CoverFlareSpawner : MonoBehaviour, ICoverFlareOwner
     {
         Vector3 playerPos = transform.position;
         Vector3 direction = targetWorldPos - playerPos;
-        float distance = direction.sqrMagnitude;
 
-        if (distance > _maxSpawnDistance)
+        float distanceSq = direction.sqrMagnitude;
+        float maxDistSq  = _maxSpawnDistance * _maxSpawnDistance;
+
+        if (distanceSq > maxDistSq)
         {
-            direction.Normalize();
-            return playerPos + direction * _maxSpawnDistance;
+            // 정확한 클램프에는 정규화가 필요하므로 이 시점의 sqrt는 불가피합니다.
+            return playerPos + direction.normalized * _maxSpawnDistance;
         }
 
         return targetWorldPos;
@@ -167,15 +162,6 @@ public class CoverFlareSpawner : MonoBehaviour, ICoverFlareOwner
     private GameObject CreateCover(Vector3 position)
     {
         return Instantiate(_coverPrefab, position + (Vector3)_spawnOffset, Quaternion.identity);
-    }
-
-    // 커버월 컴포넌트 초기화 시도
-    private void InitializeCoverIfPossible(GameObject coverObj)
-    {
-        if (coverObj != null && coverObj.TryGetComponent(out CoverWall coverWall))
-        {
-            coverWall.Initialize(_defaultCoverHP, _defaultCoverLifetime);
-        }
     }
 
     // 벽 설치 가능 여부를 검사합니다.

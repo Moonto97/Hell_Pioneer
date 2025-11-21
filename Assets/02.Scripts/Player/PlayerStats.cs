@@ -68,7 +68,7 @@ public class PlayerStats : MonoBehaviour, IPlayerHealth, IPlayerFireRate
     {
         if (percent <= 0f) return;
 
-        int increaseAmount = Mathf.RoundToInt(MaxHp * percent);
+        int increaseAmount = Mathf.RoundToInt(_initialMaxHp * percent);
         MaxHp += increaseAmount;
 
         // 기획: 최대체력 증가 시 현재 체력도 동일량 증가 (클램프)
@@ -125,10 +125,7 @@ public class PlayerStats : MonoBehaviour, IPlayerHealth, IPlayerFireRate
         if (amount <= 0f) return;
 
         FireRate *= amount;
-        if (FireRate < MinFireRate)
-        {
-            FireRate = MinFireRate;
-        }
+        FireRate = Mathf.Max(FireRate, MinFireRate);
 
         OnFireRateChanged?.Invoke(FireRate);
     }
