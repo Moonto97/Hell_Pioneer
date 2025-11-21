@@ -10,43 +10,37 @@ public class EnemyFollow : MonoBehaviour
         if (my == null) return;
 
         Node[,] grid = GridManager.Instance.Grid;
+        int sizeX = GridManager.Instance.SizeX;
+        int sizeY = GridManager.Instance.SizeY;
 
-        int[,] dirs =
+        Node best = my;
+
+        for (int x = -1; x <= 1; x++)
         {
-            { 1,  0}, {-1,  0}, { 0, 1}, { 0,-1},
-            { 1,  1}, {-1, 1}, { 1,-1}, {-1,-1}
-        };
-
-        Node best = null;
-
-        for (int i = 0; i < 8; i++)
-        {
-            int nx = my.X + dirs[i, 0];
-            int ny = my.Y + dirs[i, 1];
-
-            if (nx < 0 || ny < 0 || nx >= GridManager.Instance.SizeX || ny >= GridManager.Instance.SizeY)
-                continue;
-
-            Node next = grid[nx, ny];
-            if (!next.Walkable) continue;
-
-            // ÄÚ³ÊÄÆ ¹æÁö
-            if (dirs[i, 0] != 0 && dirs[i, 1] != 0)
+            for (int y = -1; y <= 1; y++)
             {
-                Node sideA = grid[my.X + dirs[i, 0], my.Y];
-                Node sideB = grid[my.X, my.Y + dirs[i, 1]];
-                if (!sideA.Walkable || !sideB.Walkable)
-                    continue;
-            }
+                if (x == 0 && y == 0) continue;
 
-            if (best == null || next.Distance < best.Distance)
-                best = next;
+                int nx = my.X + x;
+                int ny = my.Y + y;
+
+                if (nx < 0 || ny < 0 || nx >= sizeX || ny >= sizeY)
+                    continue;
+
+                Node next = grid[nx, ny];
+                if (!next.Walkable) continue;
+
+                if (next.Distance < best.Distance)
+                {
+                    best = next;
+                }
+            }
         }
 
-        if (best != null)
+        if (best != null && best.Distance < my.Distance)
         {
-            Vector3 direction = (best.WorldPos - transform.position).normalized;
-            transform.position += direction * Speed * Time.deltaTime;
+            Vector3 dir = (best.WorldPos - transform.position).normalized;
+            transform.position += dir * Speed * Time.deltaTime;
         }
     }
 }
