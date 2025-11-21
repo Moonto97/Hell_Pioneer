@@ -15,13 +15,13 @@ public class PlayerStats : MonoBehaviour, IPlayerHealth, IPlayerFireRate
     [SerializeField] private float _initialMoveSpeed = 5f;  //시작 이동 속도
     [SerializeField] private float _initialFireRate = 3f;   //시작 공속. 예: 초당 3발
 
-    [Header("Hit Invincibility")]
+    [Header("피격 설정")]
     [SerializeField] private float _hitInvincibleDuration = 1f;     // 피격 후 무적 지속 시간
     [SerializeField] private float _hitBlinkInterval = 0.1f;        // 피격 후 깜빡임 간격
 
     // --- 런타임 상태 ---
-    public int MaxHp { get; private set; }
-    public int CurrentHp { get; private set; }
+    public int MaxHp { get; private set; }      // 최대 체력
+    public int CurrentHp { get; private set; }  // 현재 체력
 
     public float MoveSpeed { get; private set; }
     public float FireRate { get; private set; }
