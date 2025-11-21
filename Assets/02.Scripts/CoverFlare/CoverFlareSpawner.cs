@@ -8,7 +8,7 @@ using UnityEngine;
 /// - 차지/재충전 관리
 /// - CoverWall 프리팹 생성
 /// </summary>
-public class CoverFlareSpawner : MonoBehaviour
+public class CoverFlareSpawner : MonoBehaviour, ICoverFlareOwner
 {
     [Header("References")]
     [SerializeField] private GameObject _coverPrefab;  // 생성할 벽 프리팹
@@ -188,6 +188,32 @@ private int _currentCharges;
 
         return true;
     }
+
+    /// <summary>
+    /// 커버플레어의 최대 차지 수(탄창 용량)를 증가시킵니다.
+    /// 아이템 등의 효과에서 호출됩니다.
+    /// </summary>
+    /// <param name="amount">증가시킬 최대 차지 수</param>
+    public void IncreaseCoverFlareMaxCharges(int amount)
+    {
+        _maxCharges += amount;
+
+        // 기획 선택지:
+        // 1) 현재 차지는 그대로 두고 최대치만 늘린다
+        // 2) 새로 열린 만큼 현재 차지도 채워준다 (아래 코드처럼)
+
+        _currentCharges += amount;
+
+        // 현재 차지는 최대치를 넘지 않게 클램프
+        if (_currentCharges > _maxCharges)
+        {
+            _currentCharges = _maxCharges;
+        }
+
+        // TODO: 차지 UI가 있다면 여기서 갱신 이벤트 날리면 좋음
+        Debug.Log("커버플레어 아이템을 먹었다! 마시쪙~  \n 참고로 나는 CFSpawner.cs 소속이야~");
+    }
+
 
 #if UNITY_EDITOR
     // 에디터에서 플레이어 주변에 최대 사거리 / 설치 체크 반경을 시각화
