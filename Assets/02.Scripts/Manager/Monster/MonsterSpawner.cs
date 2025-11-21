@@ -12,6 +12,9 @@ public class MonsterSpawner : MonoBehaviour
     [SerializeField] private float _level2Weight = 30f;
     [SerializeField] private float _level3Weight = 20f;
     
+    [Header("몬스터 종류")]
+    [SerializeField] private MonsterType _monsterType = MonsterType.Explosion;
+    
     private float _spawnInterval;
 
     private void Start()
@@ -36,7 +39,7 @@ public class MonsterSpawner : MonoBehaviour
 
     private void SpawnMonster()
     {
-        GameObject monster = MonsterFactory.Instance.MakeMonster(GetRandomLevelWeighted(), transform.position);
+        GameObject monster = MonsterFactory.Instance.MakeMonster(_monsterType, GetRandomLevelWeighted(), transform.position);
     }
     
     private int GetRandomLevelWeighted()

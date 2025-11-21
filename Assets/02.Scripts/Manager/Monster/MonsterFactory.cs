@@ -2,15 +2,28 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum MonsterType
+{
+    Explosion,
+    Lazer
+}
+
 public class MonsterFactory : MonoBehaviour
 {
     public static MonsterFactory Instance {get; private set;}
+    [System.Serializable]
+    private class MonsterPoolInfo
+    {
+        public MonsterType Type;
+        public GameObject Prefab;
+        public int InitialSize;
+    }
     
-    [SerializeField] private GameObject _monsterPrefab;
-    [SerializeField] private int _poolSize = 100;
+    [SerializeField] private List<MonsterPoolInfo> monsterPoolInfos;
     
-    private Queue<GameObject> _monsterPool = new Queue<GameObject>();
-
+    private Dictionary<MonsterType, Queue<GameObject>> _pools = new ();
+    private Dictionary<MonsterType, GameObject> _prefabTable = new ();
+    
     private void Awake()
     {
         if(Instance != null && Instance != this)
@@ -20,52 +33,64 @@ public class MonsterFactory : MonoBehaviour
         }
         Instance = this;
         
-        InitMonster();
+        InitPools();
     }
 
-    private void InitMonster()
+    private void InitPools()
     {
-        for (int i = 0; i < _poolSize; i++)
+        foreach (MonsterPoolInfo info in monsterPoolInfos)
         {
-            GameObject monster = Instantiate(_monsterPrefab, transform);
-            monster.SetActive(false);
-            _monsterPool.Enqueue(monster);
+            _pools[info.Type] = new Queue<GameObject>();
+            _prefabTable[info.Type] = info.Prefab;
+
+            for (int i = 0; i < info.InitialSize; i++)
+            {
+                GameObject monster = Instantiate(info.Prefab, transform);
+                monster.SetActive(false);
+                _pools[info.Type].Enqueue(monster);
+            }
         }
     }
 
-    public GameObject MakeMonster(int monsterLevel, Vector3 position)
+    public GameObject MakeMonster(MonsterType monsterType, int monsterLevel, Vector3 position)
     {
-        GameObject monster; 
-        if (_monsterPool.Count > 0)
-        {
-            monster = _monsterPool.Dequeue();
-        }
-        else
-        {
-            // 풀에 없을 경우
-            monster = Instantiate(_monsterPrefab, transform);
-        }
+        GameObject monster = GetFromPool(monsterType);
         monster.transform.position = position;
         monster.SetActive(true);
 
-        MonsterHealth monsterHealth = monster.GetComponent<MonsterHealth>();
-        monsterHealth.OnMonsterDied += HandleMonsterDeath;
-        
-        SetMonsterState(monster, monsterLevel);
+        // Health 이벤트 등록
+        MonsterHealth health = monster.GetComponent<MonsterHealth>();
+        health.OnMonsterDied += HandleMonsterDeath;
+
+        // 스탯 초기화
+        SetMonsterState(monster, monsterType, monsterLevel);
         
         return monster;
     }
     
-    public void ReturnMonster(GameObject monster)
+    private GameObject GetFromPool(MonsterType type)
+    {
+        if (_pools[type].Count > 0)
+        {
+            return _pools[type].Dequeue();
+        }
+
+        GameObject newMonster = Instantiate(_prefabTable[type], transform);
+        return newMonster;
+    }
+    
+    private void ReturnMonster(MonsterType type, GameObject monster)
     {
         monster.SetActive(false);
-        _monsterPool.Enqueue(monster);
+        _pools[type].Enqueue(monster);
     }
+    
 
-    private void SetMonsterState(GameObject monster, int monsterLevel)
+    private void SetMonsterState(GameObject monster, MonsterType type, int monsterLevel)
     {
         MonsterHealth monsterHealth = monster.GetComponent<MonsterHealth>();
         MonsterStat monsterStat = monster.GetComponent<MonsterStat>();
+        monsterStat.SetMonsterType(type);  
         monsterStat.SetMonsterLevel(monsterLevel);
         monsterHealth.ResetHealth();
     }
@@ -74,6 +99,8 @@ public class MonsterFactory : MonoBehaviour
     {
         health.OnMonsterDied -= HandleMonsterDeath;
 
-        ReturnMonster(health.gameObject);
+        MonsterType type = health.GetComponent<MonsterStat>().MonsterType;
+
+        ReturnMonster(type, health.gameObject);
     }
 }

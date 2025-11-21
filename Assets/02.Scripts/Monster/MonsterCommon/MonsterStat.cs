@@ -27,7 +27,8 @@ public class MonsterStat : MonoBehaviour
 
     private float _speed;
     public float Speed => _speed;
-
+    public MonsterType MonsterType { get; private set; }
+    
     public void SetMonsterLevel(int level)
     {
         if (!_levelData.ContainsKey(level))
@@ -52,5 +53,10 @@ public class MonsterStat : MonoBehaviour
     private int GetMaxLevel()
     {
         return _levelData.Count;
+    }
+
+    public void SetMonsterType(MonsterType monsterType)
+    {
+        MonsterType = monsterType;
     }
 }

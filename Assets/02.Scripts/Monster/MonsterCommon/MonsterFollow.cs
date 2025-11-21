@@ -2,18 +2,47 @@ using UnityEngine;
 
 public class MonsterFollow : MonoBehaviour
 {
+    [Header("플레이어에게 최대근접 거리")]
+    [SerializeField] private float MaxFollowDistance = 1f;
+    [SerializeField] private Transform player;
+    private const string PlayerTag = "Player";
     private MonsterStat _monsterStat;
 
     private void Start()
     {
         _monsterStat = GetComponent<MonsterStat>();
+        player = GameObject.FindGameObjectWithTag(PlayerTag).transform;
     }
     
     void Update()
     {
-        Node currentNode = GridManager.Instance.NodeFromWorld(transform.position);
+        if (CheckDistanceAvailable() == false) return;
+        Debug.Log("1");
+        Node currentNode = GetCurrentNode();
         if (currentNode == null) return;
+        Debug.Log("2");
+        GotoNextNode(currentNode);
+        Debug.Log("3");
+    }
 
+    private bool CheckDistanceAvailable()
+    {
+        if (player == null) return false;
+        
+        float distanceToPlayer = Vector3.Distance(transform.position, player.position);
+        if (distanceToPlayer <= MaxFollowDistance)
+            return false;
+        
+        return true;
+    }
+
+    private Node GetCurrentNode()
+    {
+        return GridManager.Instance.NodeFromWorld(transform.position);
+    }
+    
+    private void GotoNextNode(Node currentNode)
+    {
         Node[,] grid = GridManager.Instance.Grid;
         int sizeX = GridManager.Instance.SizeX;
         int sizeY = GridManager.Instance.SizeY;
