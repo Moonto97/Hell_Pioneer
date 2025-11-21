@@ -1,19 +1,24 @@
 using UnityEngine;
 
-public class EnemyFollow : MonoBehaviour
+public class MonsterFollow : MonoBehaviour
 {
-    public float Speed = 2f;
+    private MonsterStat _monsterStat;
 
+    private void Start()
+    {
+        _monsterStat = GetComponent<MonsterStat>();
+    }
+    
     void Update()
     {
-        Node my = GridManager.Instance.NodeFromWorld(transform.position);
-        if (my == null) return;
+        Node currentNode = GridManager.Instance.NodeFromWorld(transform.position);
+        if (currentNode == null) return;
 
         Node[,] grid = GridManager.Instance.Grid;
         int sizeX = GridManager.Instance.SizeX;
         int sizeY = GridManager.Instance.SizeY;
 
-        Node best = my;
+        Node best = currentNode;
 
         for (int x = -1; x <= 1; x++)
         {
@@ -21,8 +26,8 @@ public class EnemyFollow : MonoBehaviour
             {
                 if (x == 0 && y == 0) continue;
 
-                int nx = my.X + x;
-                int ny = my.Y + y;
+                int nx = currentNode.X + x;
+                int ny = currentNode.Y + y;
 
                 if (nx < 0 || ny < 0 || nx >= sizeX || ny >= sizeY)
                     continue;
@@ -37,10 +42,10 @@ public class EnemyFollow : MonoBehaviour
             }
         }
 
-        if (best != null && best.Distance < my.Distance)
+        if (best != null && best.Distance < currentNode.Distance)
         {
             Vector3 dir = (best.WorldPos - transform.position).normalized;
-            transform.position += dir * Speed * Time.deltaTime;
+            transform.position += dir * _monsterStat.Speed * Time.deltaTime;
         }
     }
 }
