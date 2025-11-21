@@ -84,7 +84,15 @@ public class CoverFlareSpawner : MonoBehaviour, ICoverFlareOwner
         if (_rechargeTimer <= 0f)
         {
             _currentCharges++;
-            _rechargeTimer = _currentCharges < _maxCharges ? _rechargeTimePerCharge : 0f;
+            if (_currentCharges < _maxCharges)
+            {
+                // 타이머가 0 이하로 내려간 만큼의 시간을 보정해줍니다.
+                _rechargeTimer += _rechargeTimePerCharge;
+            }
+            else
+            {
+                _rechargeTimer = 0f;
+            }
         }
     }
 
