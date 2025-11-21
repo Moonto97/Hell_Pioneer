@@ -102,27 +102,25 @@ public class PlayerHitFeedback : MonoBehaviour
         }
     }
 
-    private void SetSpritesVisible(bool visible)
+    private void ApplyToSprites(System.Action<SpriteRenderer> action)
     {
         if (_spriteRenderers == null) return;
         foreach (var sr in _spriteRenderers)
         {
             if (sr != null)
             {
-                sr.enabled = visible;
+                action(sr);
             }
         }
     }
 
+    private void SetSpritesVisible(bool visible)
+    {
+        ApplyToSprites(sr => sr.enabled = visible);
+    }
+
     private void ToggleSpritesVisible()
     {
-        if (_spriteRenderers == null) return;
-        foreach (var sr in _spriteRenderers)
-        {
-            if (sr != null)
-            {
-                sr.enabled = !sr.enabled;
-            }
-        }
+        ApplyToSprites(sr => sr.enabled = !sr.enabled);
     }
 }
