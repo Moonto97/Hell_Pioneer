@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class MonsterHealth : MonoBehaviour
+public class MonsterHealth : MonoBehaviour, IDamageable
 {
     private MonsterStat _monsterStat;
     private int _currentHealth;
@@ -17,7 +17,13 @@ public class MonsterHealth : MonoBehaviour
     
     public void TakeDamage(int damage)
     {
+        if (damage <= 0 || _currentHealth <= 0)
+        {
+            return;
+        }
+
         _currentHealth -= damage;
+
         if (_currentHealth <= 0)
         {
             _currentHealth = 0;
