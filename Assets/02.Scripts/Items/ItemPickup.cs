@@ -41,18 +41,12 @@ public abstract class ItemPickup : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// 이 오브젝트를 픽업할 수 있는 대상인지 검사합니다.
-    /// 기본적으로 Player 태그만 허용하며, 필요 시 오버라이드 가능합니다.
-    /// </summary>
+    // 이 오브젝트를 픽업할 수 있는 대상인지 검사
     protected virtual bool CanPickUp(Collider2D other)
     {
         return other.TryGetComponent<PlayerStats>(out _);
     }
 
-    /// <summary>
-    /// 실제 아이템 효과를 적용하는 추상 메서드.
-    /// 하위 클래스에서 구체 효과 구현.
-    /// </summary>
+    // 실제 아이템 효과를 적용하는 추상 메서드, 하위 클래스에서 구체 효과 구현
     protected abstract void HandlePickup(Collider2D other);
 }

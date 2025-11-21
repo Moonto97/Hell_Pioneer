@@ -9,10 +9,7 @@ public class CoverFlareMagazineUpItem : ItemPickup
     {
         if (other.TryGetComponent<ICoverFlareOwner>(out var coverFlareOwner) == false)
         {
-            Debug.LogWarning(
-                "CoverFlareMagazineUpItem: Player collided but no ICoverFlareOwner found on player object.",
-                this
-            );
+            Debug.LogWarning($"CoverFlareMagazineUpItem: Player '{other.name}' collided but no ICoverFlareOwner found.", this);
             return;
         }
 

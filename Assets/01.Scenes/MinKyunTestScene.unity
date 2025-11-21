@@ -410,6 +410,7 @@ GameObject:
   - component: {fileID: 1295310838}
   - component: {fileID: 1295310837}
   - component: {fileID: 1295310836}
+  - component: {fileID: 1295310839}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -536,6 +537,18 @@ MonoBehaviour:
   _initialMaxHp: 10
   _initialMoveSpeed: 5
   _initialFireRate: 3
+--- !u!114 &1295310839
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1295310833}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ff7191ffbf07a1468582bdd474a5d8c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   _hitInvincibleDuration: 1
   _hitBlinkInterval: 0.1
 --- !u!1 &1323322646
@@ -676,7 +689,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _destroyOnPickup: 1
-  _healMagnification: 0.3
+  _healPercent: 0.3
 --- !u!1 &1604894891
 GameObject:
   m_ObjectHideFlags: 0

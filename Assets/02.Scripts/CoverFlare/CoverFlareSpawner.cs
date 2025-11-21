@@ -91,7 +91,7 @@ public class CoverFlareSpawner : MonoBehaviour, ICoverFlareOwner
     // 마우스 위치 기준으로 벽 생성 시도 (오케스트레이션)
     private void TrySpawnCoverAtMouse()
     {
-        if (!CanSpawn())
+        if (CanSpawn() == false)
         {
             // TODO: UI 피드백 (차지 부족 / 프리팹 누락 / 카메라 없음)
             return;
@@ -100,13 +100,13 @@ public class CoverFlareSpawner : MonoBehaviour, ICoverFlareOwner
         Vector3 mouseWorldPos = GetMouseWorldPosition();
         Vector3 clampedPos = ClampToMaxDistance(mouseWorldPos);
 
-        if (!IsValidSpawnPosition(clampedPos))
+        if (IsValidSpawnPosition(clampedPos) == false)
         {
             // TODO: 설치 불가 이펙트/사운드
             return;
         }
 
-        if (!ConsumeCharge())
+        if (ConsumeCharge() == false)
         {
             return;
         }
@@ -120,7 +120,7 @@ public class CoverFlareSpawner : MonoBehaviour, ICoverFlareOwner
     {
         if (_coverPrefab == null) return false;
         if (_camera == null) return false;
-        if (!HasAnyCharge) return false;
+        if (HasAnyCharge == false) return false;
         return true;
     }
 
@@ -181,7 +181,7 @@ public class CoverFlareSpawner : MonoBehaviour, ICoverFlareOwner
     // 차지 1개 소모
     private bool ConsumeCharge()
     {
-        if (!HasAnyCharge) return false;
+        if (HasAnyCharge == false) return false;
 
         _currentCharges--;
 

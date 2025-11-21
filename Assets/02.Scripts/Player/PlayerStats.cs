@@ -20,9 +20,12 @@ public class PlayerStats : MonoBehaviour, IPlayerHealth, IPlayerFireRate
     public float MoveSpeed { get; private set; }
     public float FireRate { get; private set; }
 
+    private PlayerHitFeedback _hitFeedback;
+
     private void Awake()
     {
         InitializeStats();
+        _hitFeedback = GetComponent<PlayerHitFeedback>();
     }
 
     private void InitializeStats()
@@ -81,8 +84,7 @@ public class PlayerStats : MonoBehaviour, IPlayerHealth, IPlayerFireRate
         if (amount <= 0)
             return;
 
-        var hit = GetComponent<PlayerHitFeedback>();
-        if (hit != null && hit.IsInvincible)
+        if (_hitFeedback != null && _hitFeedback.IsInvincible)
             return;
 
         CurrentHp -= amount;
@@ -91,13 +93,13 @@ public class PlayerStats : MonoBehaviour, IPlayerHealth, IPlayerFireRate
         {
             CurrentHp = 0;
 
-            if (hit != null)
-                hit.PlayDeathFeedback();
+            if (_hitFeedback != null)
+                _hitFeedback.PlayDeathFeedback();
         }
         else
         {
-            if (hit != null)
-                hit.StartHitFeedback();
+            if (_hitFeedback != null)
+                _hitFeedback.StartHitFeedback();
         }
 
         // TODO: HP UI 업데이트 이벤트 등
