@@ -33,16 +33,26 @@ public class MonsterFactory : MonoBehaviour
         }
     }
 
-    public GameObject MakeMonster()
+    public GameObject MakeMonster(int monsterLevel, Vector3 position)
     {
         if (_monsterPool.Count > 0)
         {
             GameObject monster = _monsterPool.Dequeue();
             monster.SetActive(true);
+            MonsterHealth monsterHealth = monster.GetComponent<MonsterHealth>();
+            monsterHealth.OnMonsterDied += HandleMonsterDeath;
+            monsterHealth.ResetHealth();
+            SetMonsterState(monster, monsterLevel);
             return monster;
         }
         
+        // 풀에 없을 경우
         GameObject newMonster = Instantiate(_monsterPrefab, transform);
+        newMonster.SetActive(true);
+        MonsterHealth newMonsterHealth = newMonster.GetComponent<MonsterHealth>();
+        newMonsterHealth.OnMonsterDied += HandleMonsterDeath;
+        newMonsterHealth.ResetHealth();
+        SetMonsterState(newMonster, monsterLevel);
         return newMonster;
     }
     
@@ -50,5 +60,20 @@ public class MonsterFactory : MonoBehaviour
     {
         monster.SetActive(false);
         _monsterPool.Enqueue(monster);
+    }
+
+    private void SetMonsterState(GameObject monster, int monsterLevel)
+    {
+        MonsterStat monsterStat = monster.GetComponent<MonsterStat>();
+        MonsterHealth monsterHealth = monster.GetComponent<MonsterHealth>();
+        monsterStat.SetMonsterLevel(monsterLevel);
+        monsterHealth.ResetHealth();
+    }
+    
+    private void HandleMonsterDeath(MonsterHealth health)
+    {
+        health.OnMonsterDied -= HandleMonsterDeath;
+
+        ReturnMonster(health.gameObject);
     }
 }

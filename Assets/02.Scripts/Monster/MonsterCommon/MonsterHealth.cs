@@ -4,6 +4,7 @@ public class MonsterHealth : MonoBehaviour
 {
     private MonsterStat _monsterStat;
     private int _currentHealth;
+    public event System.Action<MonsterHealth> OnMonsterDied;
     
     private void Awake()
     {
@@ -27,7 +28,7 @@ public class MonsterHealth : MonoBehaviour
 
     private void Die()
     {
-        MonsterFactory.Instance.ReturnMonster(gameObject);
+        OnMonsterDied?.Invoke(this);
     }
     
     public void ResetHealth()

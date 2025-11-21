@@ -1,48 +1,56 @@
+using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
+public struct MonsterLevelData
+{
+    public int MaxHealth;
+    public int AttackDamage;
+    public float Speed;
+}
 public class MonsterStat : MonoBehaviour
 {
-    private const int DefaultMonsterLevel = 1;
-    private const int MaxMonsterLevel = 3;
-    private const int DefaultMaxHealth = 2;
-    private const int DefaultAttackDamage = 1;
-    private const float DefaultSpeed = 2f;
+    private int _level = 1;
+    private static Dictionary<int, MonsterLevelData> _levelData =
+        new Dictionary<int, MonsterLevelData>()
+        {
+            {1, new MonsterLevelData { MaxHealth = 2, AttackDamage = 1, Speed = 2f }},
+            {2, new MonsterLevelData { MaxHealth = 4, AttackDamage = 2, Speed = 2f }},
+            {3, new MonsterLevelData { MaxHealth = 8, AttackDamage = 3, Speed = 2f }},
+        };
 
-    [SerializeField] private int _monsterLevel = DefaultMonsterLevel;
-    [SerializeField] private int _maxHealth = DefaultMaxHealth;
+    private int _maxHealth;
     public int MaxHealth => _maxHealth;
-    [SerializeField] private int _attackDamage = DefaultAttackDamage;
+
+    private int _attackDamage;
     public int AttackDamage => _attackDamage;
-    [SerializeField] private float _speed = DefaultSpeed;
+
+    private float _speed;
     public float Speed => _speed;
 
     public void SetMonsterLevel(int level)
     {
-        if(level > MaxMonsterLevel)
-            level = MaxMonsterLevel;
-        
-        _monsterLevel = level;
-    }
-
-    public void SetStat()
-    {
-        switch (_monsterLevel)
+        if (!_levelData.ContainsKey(level))
         {
-            case 1:
-                _maxHealth = 2;
-                _attackDamage = 1;
-                _speed = DefaultSpeed;
-                break;
-            case 2:
-                _maxHealth = 4;
-                _attackDamage = 2;
-                _speed = DefaultSpeed;
-                break;
-            case 3:
-                _maxHealth = 8;
-                _attackDamage = 3;
-                _speed = DefaultSpeed;
-                break;
+            Debug.LogWarning($"Monster Level {level} is out of range. Using max level.");
+            level = GetMaxLevel();
         }
+
+        _level = level;
+        ApplyLevelData();
+    }
+    
+    private void ApplyLevelData()
+    {
+        MonsterLevelData data = _levelData[_level];
+
+        _maxHealth = data.MaxHealth;
+        _attackDamage = data.AttackDamage;
+        _speed = data.Speed;
+    }
+    
+    private int GetMaxLevel()
+    {
+        return _levelData.Count;
     }
 }
