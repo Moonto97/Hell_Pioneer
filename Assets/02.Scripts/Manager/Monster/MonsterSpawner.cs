@@ -13,7 +13,6 @@ public class MonsterSpawner : MonoBehaviour
     public float Level3Weight = 20f;
     
     private float _spawnInterval;
-    private float _timer;
 
     private void Start()
     {

@@ -11,7 +11,7 @@ public struct MonsterLevelData
 public class MonsterStat : MonoBehaviour
 {
     private int _level = 1;
-    private static Dictionary<int, MonsterLevelData> _levelData =
+    private static readonly Dictionary<int, MonsterLevelData> _levelData =
         new Dictionary<int, MonsterLevelData>()
         {
             {1, new MonsterLevelData { MaxHealth = 2, AttackDamage = 1, Speed = 2f }},

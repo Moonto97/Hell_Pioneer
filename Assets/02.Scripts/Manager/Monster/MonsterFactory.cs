@@ -35,25 +35,25 @@ public class MonsterFactory : MonoBehaviour
 
     public GameObject MakeMonster(int monsterLevel, Vector3 position)
     {
+        GameObject monster; 
         if (_monsterPool.Count > 0)
         {
-            GameObject monster = _monsterPool.Dequeue();
-            monster.SetActive(true);
-            MonsterHealth monsterHealth = monster.GetComponent<MonsterHealth>();
-            monsterHealth.OnMonsterDied += HandleMonsterDeath;
-            monsterHealth.ResetHealth();
-            SetMonsterState(monster, monsterLevel);
-            return monster;
+            monster = _monsterPool.Dequeue();
         }
+        else
+        {
+            // 풀에 없을 경우
+            monster = Instantiate(_monsterPrefab, transform);
+        }
+        monster.transform.position = position;
+        monster.SetActive(true);
+
+        MonsterHealth monsterHealth = monster.GetComponent<MonsterHealth>();
+        monsterHealth.OnMonsterDied += HandleMonsterDeath;
         
-        // 풀에 없을 경우
-        GameObject newMonster = Instantiate(_monsterPrefab, transform);
-        newMonster.SetActive(true);
-        MonsterHealth newMonsterHealth = newMonster.GetComponent<MonsterHealth>();
-        newMonsterHealth.OnMonsterDied += HandleMonsterDeath;
-        newMonsterHealth.ResetHealth();
-        SetMonsterState(newMonster, monsterLevel);
-        return newMonster;
+        SetMonsterState(monster, monsterLevel);
+        
+        return monster;
     }
     
     public void ReturnMonster(GameObject monster)
