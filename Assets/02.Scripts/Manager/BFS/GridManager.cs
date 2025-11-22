@@ -71,7 +71,7 @@ public class GridManager : MonoBehaviour
             if (!grid.Walkable)
             {
                 // 벽 = 진한 회색
-                Gizmos.color = new Color(0.2f, 0.2f, 0.2f, 1f);
+                Gizmos.color = new Color(0.2f, 0.2f, 0.2f, 0.5f);
                 Gizmos.DrawCube(grid.WorldPos, Vector3.one * 0.9f);
                 continue;
             }
@@ -86,8 +86,11 @@ public class GridManager : MonoBehaviour
 
             // Distance → 색 변환 (가까울수록 파랑, 멀수록 빨강)
             float t = (float)grid.Distance / maxDist;
-            Gizmos.color = Color.Lerp(Color.blue, Color.red, t);
+            Color baseColor = Color.Lerp(Color.blue, Color.red, t);
+            baseColor.a = 0.5f;
 
+            Gizmos.color = baseColor;
+            
             Gizmos.DrawCube(grid.WorldPos, Vector3.one * 0.9f);
         }
     }

@@ -5,7 +5,7 @@ using UnityEngine;
 public enum MonsterType
 {
     Explosion,
-    Lazer
+    Laser
 }
 
 public class MonsterFactory : MonoBehaviour

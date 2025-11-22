@@ -17,12 +17,9 @@ public class MonsterFollow : MonoBehaviour
     void Update()
     {
         if (CheckDistanceAvailable() == false) return;
-        Debug.Log("1");
         Node currentNode = GetCurrentNode();
         if (currentNode == null) return;
-        Debug.Log("2");
         GotoNextNode(currentNode);
-        Debug.Log("3");
     }
 
     private bool CheckDistanceAvailable()
