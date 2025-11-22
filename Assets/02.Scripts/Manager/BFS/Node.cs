@@ -17,4 +17,9 @@ public class Node
         Y = y;
         Distance = int.MaxValue;
     }
+
+    public void ChangeWalkable(bool walkable)
+    {
+        Walkable = walkable;
+    }
 }
